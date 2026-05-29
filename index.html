@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulador Kino Premium</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap');
+
+  :root {
+    --bg: #f0f2f7;
+    --surface: #ffffff;
+    --surface2: #f7f8fc;
+    --border: #e2e6f0;
+    --blue: #1a56db;
+    --blue-dark: #1040b0;
+    --blue-light: #e8effe;
+    --green: #0e9f6e;
+    --green-light: #e5f9f0;
+    --amber: #c27803;
+    --amber-light: #fdf3dc;
+    --red: #e02424;
+    --red-light: #fde8e8;
+    --purple: #7e3af2;
+    --purple-light: #ede9fe;
+    --text: #111827;
+    --text2: #4b5563;
+    --text3: #9ca3af;
+    --radius: 16px;
+    --shadow: 0 2px 20px rgba(0,0,0,0.07);
+    --shadow-lg: 0 8px 40px rgba(0,0,0,0.12);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Syne', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0 0 60px 0;
+  }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, #0f2057 0%, #1a56db 60%, #3b82f6 100%);
+    padding: 48px 24px 56px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Ccircle cx='30' cy='30' r='20'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+  .hero-badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 99px;
+    margin-bottom: 18px;
+  }
+  .hero h1 {
+    font-size: clamp(28px, 6vw, 52px);
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.1;
+    margin-bottom: 12px;
+    letter-spacing: -1px;
+  }
+  .hero h1 span { color: #93c5fd; }
+  .hero p {
+    color: rgba(255,255,255,0.75);
+    font-size: 15px;
+    max-width: 480px;
+    margin: 0 auto;
+    font-weight: 400;
+    line-height: 1.6;
+  }
+  .balls-row {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 28px;
+    flex-wrap: wrap;
+  }
+  .ball-demo {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px; font-weight: 500;
+    color: #fff;
+    background: rgba(255,255,255,0.18);
+    border: 1.5px solid rgba(255,255,255,0.3);
+  }
+
+  /* LAYOUT */
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 32px 16px 0;
+  }
+
+  /* CARDS */
+  .card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    padding: 28px;
+    margin-bottom: 20px;
+  }
+  .card-title {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 16px;
+  }
+
+  /* TICKETS */
+  .tickets-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+  }
+  .ticket {
+    background: var(--surface2);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 18px;
+  }
+  .ticket-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: 12px;
+  }
+  .ticket-numbers {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .num-ball {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px; font-weight: 500;
+    background: var(--blue-light);
+    color: var(--blue-dark);
+    border: 1.5px solid rgba(26,86,219,0.2);
+  }
+  .num-ball.hit {
+    background: var(--green);
+    color: #fff;
+    border-color: var(--green);
+    box-shadow: 0 0 8px rgba(14,159,110,0.4);
+  }
+
+  /* CONTROLS */
+  .controls-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: flex-end;
+  }
+  .field-group { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 160px; }
+  .field-group label {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text2);
+  }
+  select, button {
+    border-radius: 10px;
+    border: 1.5px solid var(--border);
+    padding: 12px 16px;
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  select {
+    background: var(--surface2);
+    color: var(--text);
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 36px;
+  }
+  select:focus { outline: none; border-color: var(--blue); }
+  .btn-primary {
+    background: var(--blue);
+    color: #fff;
+    border-color: var(--blue);
+    padding: 12px 28px;
+    white-space: nowrap;
+  }
+  .btn-primary:hover { background: var(--blue-dark); border-color: var(--blue-dark); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(26,86,219,0.3); }
+  .btn-primary:active { transform: none; }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+  .btn-secondary {
+    background: var(--surface2);
+    color: var(--text2);
+    border-color: var(--border);
+    font-size: 13px;
+    padding: 9px 18px;
+  }
+  .btn-secondary:hover { background: var(--blue-light); color: var(--blue); border-color: var(--blue); }
+
+  /* PROGRESS */
+  .progress-wrap { display: none; margin-top: 16px; }
+  .progress-bar-bg {
+    height: 8px;
+    background: var(--border);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--blue), #3b82f6);
+    border-radius: 99px;
+    transition: width .1s;
+    width: 0%;
+  }
+  .progress-label { font-size: 12px; color: var(--text3); margin-top: 6px; font-family: 'DM Mono', monospace; }
+
+  /* RESULTS */
+  #results { display: none; }
+
+  /* SUMMARY TABLE */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead tr { background: var(--surface2); }
+  th {
+    padding: 10px 12px;
+    text-align: center;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text3);
+    border-bottom: 2px solid var(--border);
+    white-space: nowrap;
+  }
+  th:first-child { text-align: left; }
+  td {
+    padding: 10px 12px;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+  }
+  td:first-child { text-align: left; font-family: 'Syne', sans-serif; font-weight: 700; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--blue-light); }
+  .badge-green { background: var(--green-light); color: var(--green); padding: 2px 8px; border-radius: 99px; font-size: 11px; font-weight: 700; }
+  .badge-blue  { background: var(--blue-light);  color: var(--blue);  padding: 2px 8px; border-radius: 99px; font-size: 11px; font-weight: 700; }
+  .badge-amber { background: var(--amber-light); color: var(--amber); padding: 2px 8px; border-radius: 99px; font-size: 11px; font-weight: 700; }
+  .badge-purple { background: var(--purple-light); color: var(--purple); padding: 2px 8px; border-radius: 99px; font-size: 11px; font-weight: 700; }
+
+  /* WINNERS SECTION */
+  .winners-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 4px; }
+  .winner-card {
+    border-radius: 12px;
+    padding: 16px;
+    border: 2px solid;
+  }
+  .winner-card.gold   { background: var(--amber-light);  border-color: #d97706; }
+  .winner-card.silver { background: var(--blue-light);   border-color: var(--blue); }
+  .winner-card.bronze { background: var(--purple-light); border-color: var(--purple); }
+  .winner-type { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; opacity: 0.7; margin-bottom: 4px; }
+  .winner-name { font-size: 18px; font-weight: 800; }
+  .winner-detail { font-size: 12px; opacity: 0.75; margin-top: 2px; font-family: 'DM Mono', monospace; }
+
+  /* LECTURA */
+  .lectura-body {
+    background: linear-gradient(135deg, #0f2057 0%, #1a56db 100%);
+    border-radius: 12px;
+    padding: 24px;
+    color: #fff;
+  }
+  .lectura-icon { font-size: 28px; margin-bottom: 10px; }
+  .lectura-text { font-size: 14px; line-height: 1.8; opacity: 0.92; font-weight: 400; }
+  .lectura-text p { margin-bottom: 8px; }
+  .lectura-text p:last-child { margin-bottom: 0; }
+
+  /* SORTEOS MUESTRA */
+  .sample-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .sample-list { display: none; }
+  .sorteo-item {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    font-size: 12px;
+  }
+  .sorteo-row { display: flex; align-items: flex-start; gap: 10px; flex-wrap: wrap; }
+  .sorteo-num-label { font-weight: 700; font-size: 11px; color: var(--text3); min-width: 60px; margin-top: 2px; }
+  .sorteo-balls { display: flex; flex-wrap: wrap; gap: 4px; }
+  .s-ball {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px; font-weight: 500;
+    background: var(--border);
+    color: var(--text2);
+  }
+  .s-ball.h { background: var(--green); color: #fff; }
+  .sorteo-hits { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+  .hit-badge {
+    font-size: 11px; font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 99px;
+  }
+  .hit-badge.t1 { background: #dbeafe; color: #1e40af; }
+  .hit-badge.t2 { background: #d1fae5; color: #065f46; }
+  .hit-badge.t3 { background: #ede9fe; color: #5b21b6; }
+  .hit-badge.t4 { background: #fef3c7; color: #92400e; }
+
+  /* DISCLAIMER */
+  .disclaimer {
+    background: var(--surface2);
+    border: 1.5px dashed var(--border);
+    border-radius: 12px;
+    padding: 14px 18px;
+    font-size: 12px;
+    color: var(--text3);
+    line-height: 1.6;
+    text-align: center;
+  }
+  .disclaimer strong { color: var(--text2); }
+
+  /* RESPONSIVE */
+  @media (max-width: 600px) {
+    .card { padding: 18px; }
+    th, td { padding: 8px 8px; font-size: 11px; }
+    .hero { padding: 36px 16px 44px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">Simulador Estadístico</div>
+  <h1>Kino <span>Premium</span></h1>
+  <p>Compara tus tickets contra miles de sorteos aleatorios y mide su comportamiento estadístico.</p>
+  <div class="balls-row" id="heroBalls"></div>
+</div>
+
+<div class="container">
+
+  <!-- TICKETS -->
+  <div class="card">
+    <div class="card-title">🎟️ Mis Tickets Premium</div>
+    <div class="tickets-grid">
+      <div class="ticket">
+        <div class="ticket-label">Pro Max #1</div>
+        <div class="ticket-numbers" id="t1display"></div>
+      </div>
+      <div class="ticket">
+        <div class="ticket-label">Pro Max #2</div>
+        <div class="ticket-numbers" id="t2display"></div>
+      </div>
+      <div class="ticket">
+        <div class="ticket-label">Pro Max #3</div>
+        <div class="ticket-numbers" id="t3display"></div>
+      </div>
+      <div class="ticket">
+        <div class="ticket-label">Ticket Alfa</div>
+        <div class="ticket-numbers" id="t4display"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTROLES -->
+  <div class="card">
+    <div class="card-title">⚙️ Configuración de Simulación</div>
+    <div class="controls-row">
+      <div class="field-group">
+        <label>Cantidad de sorteos</label>
+        <select id="numSorteos">
+          <option value="50">50 sorteos</option>
+          <option value="100">100 sorteos</option>
+          <option value="500">500 sorteos</option>
+          <option value="1000" selected>1,000 sorteos</option>
+          <option value="10000">10,000 sorteos</option>
+          <option value="100000">100,000 sorteos</option>
+        </select>
+      </div>
+      <button class="btn-primary" id="btnSimular" onclick="iniciarSimulacion()">▶ Simular sorteos</button>
+    </div>
+    <div class="progress-wrap" id="progressWrap">
+      <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div>
+      <div class="progress-label" id="progressLabel">Procesando...</div>
+    </div>
+  </div>
+
+  <!-- RESULTADOS -->
+  <div id="results">
+
+    <!-- TABLA RESUMEN -->
+    <div class="card">
+      <div class="card-title">📊 Tabla Resumen de Resultados</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Ticket</th>
+              <th>Simulaciones</th>
+              <th>Promedio</th>
+              <th>Mejor Hit</th>
+              <th>0 Hits</th>
+              <th>5+</th>
+              <th>6+</th>
+              <th>7+</th>
+              <th>8+</th>
+              <th>9+</th>
+              <th>10 Hits</th>
+              <th>% 7+</th>
+              <th>% 10</th>
+            </tr>
+          </thead>
+          <tbody id="tablebody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- GANADORES -->
+    <div class="card">
+      <div class="card-title">🏆 Ticket Más Fuerte</div>
+      <div class="winners-grid" id="winnersGrid"></div>
+    </div>
+
+    <!-- LECTURA DEL SISTEMA -->
+    <div class="card">
+      <div class="card-title">🧠 Lectura del Sistema</div>
+      <div class="lectura-body">
+        <div class="lectura-icon">📡</div>
+        <div class="lectura-text" id="lecturaText"></div>
+      </div>
+    </div>
+
+    <!-- MUESTRA DE SORTEOS -->
+    <div class="card">
+      <div class="sample-header">
+        <div class="card-title" style="margin:0">🎲 Primeros 20 Sorteos Generados</div>
+        <button class="btn-secondary" id="btnToggleSorteos" onclick="toggleSorteos()">👁 Mostrar sorteos</button>
+      </div>
+      <div class="sample-list" id="sampleList"></div>
+    </div>
+
+    <!-- DISCLAIMER -->
+    <div class="disclaimer">
+      <strong>⚠️ Nota importante:</strong> Este simulador no predice resultados reales. Solo compara los tickets contra sorteos aleatorios para medir probabilidad y comportamiento estadístico.
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ==================== DATOS ====================
+const TICKETS = [
+  [7,23,32,34,44,54,59,63,66,79],
+  [5,13,14,17,40,42,48,51,55,70],
+  [21,28,35,52,56,61,65,67,71,78],
+  [7,23,32,34,44,54,59,63,64,66]
+];
+const TICKET_NAMES = ['Pro Max #1','Pro Max #2','Pro Max #3','Ticket Alfa'];
+
+// ==================== INIT ====================
+window.onload = () => {
+  const heroNums = [4,12,23,37,45,56,63,71,80];
+  const hb = document.getElementById('heroBalls');
+  heroNums.forEach(n => {
+    const d = document.createElement('div');
+    d.className = 'ball-demo';
+    d.textContent = n < 10 ? '0'+n : n;
+    hb.appendChild(d);
+  });
+  TICKETS.forEach((t, i) => renderTicket(t, 't'+(i+1)+'display', []));
+};
+
+function renderTicket(nums, id, hits) {
+  const el = document.getElementById(id);
+  el.innerHTML = '';
+  nums.forEach(n => {
+    const b = document.createElement('div');
+    b.className = 'num-ball' + (hits.includes(n) ? ' hit' : '');
+    b.textContent = n < 10 ? '0'+n : n;
+    el.appendChild(b);
+  });
+}
+
+// ==================== SORTEO ALEATORIO ====================
+function generarSorteo() {
+  const pool = Array.from({length:80},(_,i)=>i+1);
+  for (let i = pool.length-1; i > 0; i--) {
+    const j = Math.random()*i|0;
+    [pool[i],pool[j]] = [pool[j],pool[i]];
+  }
+  return pool.slice(0,20).sort((a,b)=>a-b);
+}
+
+function contarAciertos(sorteo, ticket) {
+  const set = new Set(sorteo);
+  return ticket.filter(n => set.has(n)).length;
+}
+
+// ==================== SIMULACIÓN PRINCIPAL ====================
+let sampleSorteos = [];
+
+function iniciarSimulacion() {
+  const total = parseInt(document.getElementById('numSorteos').value);
+  document.getElementById('btnSimular').disabled = true;
+  document.getElementById('progressWrap').style.display = 'block';
+  document.getElementById('results').style.display = 'none';
+
+  const stats = TICKETS.map(() => ({
+    total: 0, sumHits: 0, best: 0,
+    zero: 0, c5: 0, c6: 0, c7: 0, c8: 0, c9: 0, c10: 0
+  }));
+  sampleSorteos = [];
+
+  // Chunked para no bloquear UI
+  const CHUNK = total > 50000 ? 5000 : total > 5000 ? 2000 : 500;
+  let done = 0;
+
+  function processChunk() {
+    const end = Math.min(done + CHUNK, total);
+    for (let i = done; i < end; i++) {
+      const sorteo = generarSorteo();
+      if (sampleSorteos.length < 20) sampleSorteos.push(sorteo);
+      TICKETS.forEach((ticket, ti) => {
+        const h = contarAciertos(sorteo, ticket);
+        stats[ti].total++;
+        stats[ti].sumHits += h;
+        if (h > stats[ti].best) stats[ti].best = h;
+        if (h === 0) stats[ti].zero++;
+        if (h >= 5)  stats[ti].c5++;
+        if (h >= 6)  stats[ti].c6++;
+        if (h >= 7)  stats[ti].c7++;
+        if (h >= 8)  stats[ti].c8++;
+        if (h >= 9)  stats[ti].c9++;
+        if (h === 10) stats[ti].c10++;
+      });
+    }
+    done = end;
+    const pct = (done/total*100).toFixed(1);
+    document.getElementById('progressFill').style.width = pct+'%';
+    document.getElementById('progressLabel').textContent =
+      `Procesando: ${done.toLocaleString()} / ${total.toLocaleString()} sorteos (${pct}%)`;
+
+    if (done < total) {
+      setTimeout(processChunk, 0);
+    } else {
+      finalizarSimulacion(stats, total);
+    }
+  }
+  processChunk();
+}
+
+function finalizarSimulacion(stats, total) {
+  renderTabla(stats);
+  renderWinners(stats);
+  renderLectura(stats, total);
+  renderSampleList();
+  document.getElementById('sampleList').style.display = 'none';
+  document.getElementById('btnToggleSorteos').textContent = '👁 Mostrar sorteos';
+  document.getElementById('results').style.display = 'block';
+  document.getElementById('progressWrap').style.display = 'none';
+  document.getElementById('btnSimular').disabled = false;
+  document.getElementById('results').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+// ==================== TABLA ====================
+function renderTabla(stats) {
+  const body = document.getElementById('tablebody');
+  body.innerHTML = '';
+  stats.forEach((s, i) => {
+    const avg = (s.sumHits / s.total).toFixed(3);
+    const pct7 = (s.c7/s.total*100).toFixed(3)+'%';
+    const pct10 = (s.c10/s.total*100).toFixed(4)+'%';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${TICKET_NAMES[i]}</td>
+      <td>${s.total.toLocaleString()}</td>
+      <td><span class="badge-blue">${avg}</span></td>
+      <td><span class="badge-${s.best>=8?'green':s.best>=6?'amber':'blue'}">${s.best}</span></td>
+      <td>${s.zero.toLocaleString()}</td>
+      <td>${s.c5.toLocaleString()}</td>
+      <td>${s.c6.toLocaleString()}</td>
+      <td>${s.c7.toLocaleString()}</td>
+      <td>${s.c8.toLocaleString()}</td>
+      <td>${s.c9.toLocaleString()}</td>
+      <td><strong>${s.c10.toLocaleString()}</strong></td>
+      <td>${pct7}</td>
+      <td>${pct10}</td>
+    `;
+    body.appendChild(tr);
+  });
+}
+
+// ==================== GANADORES ====================
+function renderWinners(stats) {
+  const avgs = stats.map(s => s.sumHits/s.total);
+  const best7 = stats.map(s => s.c7);
+  const best10 = stats.map(s => s.c10);
+
+  const maxAvgIdx  = avgs.indexOf(Math.max(...avgs));
+  const max7Idx    = best7.indexOf(Math.max(...best7));
+  const max10Idx   = best10.indexOf(Math.max(...best10));
+
+  const grid = document.getElementById('winnersGrid');
+  grid.innerHTML = `
+    <div class="winner-card gold">
+      <div class="winner-type">🥇 Mayor Promedio</div>
+      <div class="winner-name">${TICKET_NAMES[maxAvgIdx]}</div>
+      <div class="winner-detail">Promedio: ${avgs[maxAvgIdx].toFixed(3)} aciertos</div>
+    </div>
+    <div class="winner-card silver">
+      <div class="winner-type">🥈 Más 7+ Aciertos</div>
+      <div class="winner-name">${TICKET_NAMES[max7Idx]}</div>
+      <div class="winner-detail">${best7[max7Idx].toLocaleString()} veces con 7+</div>
+    </div>
+    <div class="winner-card bronze">
+      <div class="winner-type">🏆 Más 10 Aciertos</div>
+      <div class="winner-name">${TICKET_NAMES[max10Idx]}</div>
+      <div class="winner-detail">${best10[max10Idx].toLocaleString()} veces con 10 plenos</div>
+    </div>
+  `;
+}
+
+// ==================== LECTURA ====================
+function renderLectura(stats, total) {
+  const lines = [];
+  const avgs = stats.map(s => s.sumHits/s.total);
+  const globalAvg = avgs.reduce((a,b)=>a+b,0)/3;
+
+  lines.push(`<p>📋 <strong>Resumen general:</strong> Se simularon <strong>${total.toLocaleString()} sorteos</strong> de 20 números del 1 al 80 y se compararon contra los 3 tickets. El promedio global de aciertos fue <strong>${globalAvg.toFixed(3)}</strong> por ticket (valor teórico esperado: 2.500).</p>`);
+
+  stats.forEach((s, i) => {
+    const avg = s.sumHits / s.total;
+    if (avg > 2.8) lines.push(`<p>🔥 <strong>${TICKET_NAMES[i]}</strong> mostró un promedio por encima de lo esperado (${avg.toFixed(3)}), lo que sugiere una selección de números favorablemente distribuida para este tamaño de muestra.</p>`);
+    else if (avg < 2.2) lines.push(`<p>📉 <strong>${TICKET_NAMES[i]}</strong> obtuvo un promedio bajo (${avg.toFixed(3)}). Esto puede ser variación normal del azar en la muestra simulada.</p>`);
+    else lines.push(`<p>✅ <strong>${TICKET_NAMES[i]}</strong> se comportó dentro del rango estadístico esperado (promedio ${avg.toFixed(3)}), consistente con distribución uniforme al azar.</p>`);
+  });
+
+  const max7 = Math.max(...stats.map(s=>s.c7));
+  const max10 = Math.max(...stats.map(s=>s.c10));
+  const pct7max = max7/total*100;
+
+  if (pct7max > 3) lines.push(`<p>⚡ Hubo <strong>${max7.toLocaleString()} ocasiones</strong> con 7 o más aciertos (${pct7max.toFixed(2)}%). Eso es estadísticamente notable. En el Kino real, 7+ suele requerir premios parciales.</p>`);
+  else if (pct7max > 1) lines.push(`<p>📊 Los 7+ aciertos ocurrieron en <strong>${pct7max.toFixed(3)}%</strong> de los sorteos. Es un porcentaje bajo pero consistente con la probabilidad combinatoria real.</p>`);
+  else lines.push(`<p>🎯 Los 7+ aciertos fueron escasos (<strong>${pct7max.toFixed(3)}%</strong> del total). Esto refleja la baja probabilidad combinatoria de acertar muchos números en una selección de 20 sobre 80.</p>`);
+
+  if (max10 === 0) lines.push(`<p>🔮 <strong>Ningún ticket alcanzó los 10 aciertos</strong> en esta simulación. Esto es completamente normal: la probabilidad de acertar 10 de 10 en un sorteo de 20/80 es aproximadamente 1 en 8.9 millones.</p>`);
+  else if (max10 === 1) lines.push(`<p>🌟 <strong>Se registró exactamente 1 pleno de 10 aciertos</strong>. Un evento extremadamente raro que confirma la altísima aleatoriedad del sistema.</p>`);
+  else lines.push(`<p>💫 <strong>Se lograron ${max10} plenos de 10 aciertos</strong>. Con una muestra de ${total.toLocaleString()} sorteos, esto solo es posible cuando el volumen de simulaciones es muy alto.</p>`);
+
+  lines.push(`<p>ℹ️ <em>Los resultados varían en cada ejecución. Para obtener estimaciones más estables, usa 100,000 sorteos o más.</em></p>`);
+
+  document.getElementById('lecturaText').innerHTML = lines.join('');
+}
+
+// ==================== MUESTRA ====================
+function renderSampleList() {
+  const el = document.getElementById('sampleList');
+  el.innerHTML = '';
+  sampleSorteos.forEach((sorteo, idx) => {
+    const div = document.createElement('div');
+    div.className = 'sorteo-item';
+
+    const sets = TICKETS.map(t => new Set(t));
+    const hitsArr = TICKETS.map(t => contarAciertos(sorteo, t));
+
+    const ballsHTML = sorteo.map(n => {
+      const isHit = TICKETS.some(t => t.includes(n));
+      return `<div class="s-ball${isHit?' h':''}">${n<10?'0'+n:n}</div>`;
+    }).join('');
+
+    const badgesHTML = hitsArr.map((h, ti) =>
+      `<span class="hit-badge t${ti+1}">T${ti+1}: ${h} ✓</span>`
+    ).join('');
+
+    div.innerHTML = `
+      <div class="sorteo-row">
+        <div class="sorteo-num-label">#${idx+1}</div>
+        <div class="sorteo-balls">${ballsHTML}</div>
+      </div>
+      <div class="sorteo-hits">${badgesHTML}</div>
+    `;
+    el.appendChild(div);
+  });
+}
+
+function toggleSorteos() {
+  const el = document.getElementById('sampleList');
+  const btn = document.getElementById('btnToggleSorteos');
+  if (el.style.display === 'none') {
+    el.style.display = 'block';
+    btn.textContent = '🙈 Ocultar sorteos';
+  } else {
+    el.style.display = 'none';
+    btn.textContent = '👁 Mostrar sorteos';
+  }
+}
+</script>
+</body>
+</html>
