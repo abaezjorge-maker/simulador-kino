@@ -357,11 +357,152 @@
   }
   .disclaimer strong { color: var(--text2); }
 
+  /* LIVE MODE */
+  .live-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: #ef4444;
+    box-shadow: 0 0 0 0 rgba(239,68,68,0.6);
+    animation: livepulse 1.4s infinite;
+    display: none;
+  }
+  .live-dot.active { display: inline-block; }
+  @keyframes livepulse {
+    0%   { box-shadow: 0 0 0 0 rgba(239,68,68,0.6); }
+    70%  { box-shadow: 0 0 0 8px rgba(239,68,68,0); }
+    100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
+  }
+  .live-controls { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .btn-live {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: #fff; border: none;
+    border-radius: 10px; padding: 11px 22px;
+    font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700;
+    cursor: pointer; transition: all .2s;
+  }
+  .btn-live:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(239,68,68,0.4); }
+  .btn-live:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+  .btn-stop {
+    background: var(--surface2); color: var(--text2);
+    border: 1.5px solid var(--border);
+    border-radius: 10px; padding: 11px 18px;
+    font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700;
+    cursor: pointer; transition: all .2s; display: none;
+  }
+  .btn-stop:hover { background: #fee2e2; color: #dc2626; border-color: #dc2626; }
+  .live-counter {
+    text-align: center; margin-bottom: 16px;
+    font-family: 'DM Mono', monospace; font-size: 13px;
+    color: var(--text3); min-height: 20px;
+  }
+  .live-counter span { color: var(--blue); font-weight: 700; }
+  .machine-wrap {
+    background: linear-gradient(160deg, #0f2057 0%, #1e3a8a 100%);
+    border-radius: 16px; padding: 24px; margin-bottom: 20px;
+    position: relative; overflow: hidden;
+  }
+  .machine-wrap::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(59,130,246,0.2) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .machine-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; color: rgba(255,255,255,0.4);
+    text-align: center; margin-bottom: 14px;
+  }
+  .current-ball-wrap {
+    display: flex; flex-direction: column; align-items: center;
+    margin-bottom: 20px; min-height: 90px; justify-content: center;
+  }
+  .current-ball {
+    width: 72px; height: 72px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'DM Mono', monospace; font-size: 24px; font-weight: 500;
+    color: #fff; background: rgba(255,255,255,0.1);
+    border: 2px solid rgba(255,255,255,0.15);
+  }
+  .current-ball.dropping {
+    animation: ballDrop 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards;
+  }
+  .current-ball.hit-ball {
+    background: linear-gradient(135deg, #059669, #10b981);
+    border-color: #34d399;
+    box-shadow: 0 0 24px rgba(16,185,129,0.6);
+  }
+  @keyframes ballDrop {
+    0%   { transform: translateY(-40px) scale(0.6); opacity: 0; }
+    100% { transform: translateY(0) scale(1); opacity: 1; }
+  }
+  .current-ball-sub {
+    font-size: 11px; color: rgba(255,255,255,0.5);
+    margin-top: 6px; font-family: 'DM Mono', monospace; min-height: 16px;
+  }
+  .live-balls-grid {
+    display: flex; flex-wrap: wrap; gap: 6px; justify-content: center;
+  }
+  .live-ball {
+    width: 34px; height: 34px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500;
+    background: rgba(255,255,255,0.08);
+    border: 1.5px solid rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.3); transition: all .3s;
+  }
+  .live-ball.revealed {
+    background: rgba(255,255,255,0.18);
+    border-color: rgba(255,255,255,0.35);
+    color: #fff;
+    animation: popIn .35s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .live-ball.revealed.is-hit {
+    background: linear-gradient(135deg, #059669, #10b981);
+    border-color: #34d399; color: #fff;
+    box-shadow: 0 0 10px rgba(16,185,129,0.5);
+  }
+  @keyframes popIn {
+    0%   { transform: scale(0.5); opacity: 0; }
+    100% { transform: scale(1);   opacity: 1; }
+  }
+  .live-scores {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 10px; margin-top: 4px;
+  }
+  .live-score-card {
+    background: var(--surface2); border: 1.5px solid var(--border);
+    border-radius: 12px; padding: 12px 14px; text-align: center; transition: all .3s;
+  }
+  .live-score-card.has-hit { background: var(--green-light); border-color: var(--green); }
+  .live-score-name {
+    font-size: 10px; font-weight: 700; letter-spacing: 1px;
+    text-transform: uppercase; color: var(--text3); margin-bottom: 4px;
+  }
+  .live-score-num {
+    font-size: 28px; font-weight: 800; color: var(--text);
+    font-family: 'DM Mono', monospace; line-height: 1; transition: all .2s;
+  }
+  .live-score-card.has-hit .live-score-num { color: var(--green); }
+  .live-score-card.has-hit .live-score-name { color: var(--green); }
+  .live-score-sub { font-size: 10px; color: var(--text3); margin-top: 2px; font-family: 'DM Mono', monospace; }
+  .live-result-banner {
+    display: none; border-radius: 12px; padding: 16px 20px;
+    margin-top: 16px; text-align: center;
+  }
+  .live-result-banner.show { display: block; }
+  .live-result-banner.good  { background: var(--green-light); border: 1.5px solid var(--green); color: var(--green); }
+  .live-result-banner.meh   { background: var(--blue-light);  border: 1.5px solid var(--blue);  color: var(--blue-dark); }
+  .live-result-banner.none  { background: var(--surface2);    border: 1.5px solid var(--border); color: var(--text3); }
+  .live-result-banner strong { font-size: 16px; display: block; margin-bottom: 4px; }
+  .live-result-banner span   { font-size: 12px; }
+
   /* RESPONSIVE */
   @media (max-width: 600px) {
     .card { padding: 18px; }
     th, td { padding: 8px 8px; font-size: 11px; }
     .hero { padding: 36px 16px 44px; }
+    .live-ball { width: 28px; height: 28px; font-size: 10px; }
+    .current-ball { width: 60px; height: 60px; font-size: 20px; }
   }
 </style>
 </head>
@@ -397,6 +538,30 @@
         <div class="ticket-label">Ticket Alfa</div>
         <div class="ticket-numbers" id="t4display"></div>
       </div>
+      <div class="ticket">
+        <div class="ticket-label">Premium #4</div>
+        <div class="ticket-numbers" id="t5display"></div>
+      </div>
+      <div class="ticket">
+        <div class="ticket-label">Premium #5</div>
+        <div class="ticket-numbers" id="t6display"></div>
+      </div>
+      <div class="ticket">
+        <div class="ticket-label">Premium #6</div>
+        <div class="ticket-numbers" id="t7display"></div>
+      </div>
+      <div class="ticket">
+        <div class="ticket-label">Premium #7</div>
+        <div class="ticket-numbers" id="t8display"></div>
+      </div>
+      <div class="ticket">
+        <div class="ticket-label">Premium #8</div>
+        <div class="ticket-numbers" id="t9display"></div>
+      </div>
+      <div class="ticket">
+        <div class="ticket-label">Premium #9</div>
+        <div class="ticket-numbers" id="t10display"></div>
+      </div>
     </div>
   </div>
 
@@ -407,6 +572,9 @@
       <div class="field-group">
         <label>Cantidad de sorteos</label>
         <select id="numSorteos">
+          <option value="1">1 sorteo</option>
+          <option value="5">5 sorteos</option>
+          <option value="10">10 sorteos</option>
           <option value="50">50 sorteos</option>
           <option value="100">100 sorteos</option>
           <option value="500">500 sorteos</option>
@@ -420,6 +588,42 @@
     <div class="progress-wrap" id="progressWrap">
       <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div>
       <div class="progress-label" id="progressLabel">Procesando...</div>
+    </div>
+  </div>
+
+  <!-- MODO KINO EN VIVO -->
+  <div class="card" id="liveCard">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div class="live-dot" id="liveDot"></div>
+        <div style="font-size:18px;font-weight:800;">🎰 Modo Kino en Vivo</div>
+      </div>
+      <div class="live-controls">
+        <button class="btn-live" id="btnLive" onclick="iniciarLive()">▶ Iniciar sorteo</button>
+        <button class="btn-stop" id="btnStop" onclick="detenerLive()">⏹ Detener</button>
+      </div>
+    </div>
+
+    <div class="live-counter" id="liveCounter">Presiona "Iniciar sorteo" para comenzar</div>
+
+    <!-- Máquina de bolas -->
+    <div class="machine-wrap">
+      <div class="machine-label">🎱 Extracción en curso</div>
+      <div class="current-ball-wrap">
+        <div class="current-ball" id="currentBall">—</div>
+        <div class="current-ball-sub" id="currentBallSub"></div>
+      </div>
+      <div class="live-balls-grid" id="liveBallsGrid"></div>
+    </div>
+
+    <!-- Marcador en vivo por ticket -->
+    <div class="card-title">🎯 Aciertos en Tiempo Real</div>
+    <div class="live-scores" id="liveScores"></div>
+
+    <!-- Banner resultado final -->
+    <div class="live-result-banner" id="liveResultBanner">
+      <strong id="liveResultTitle"></strong>
+      <span id="liveResultSub"></span>
     </div>
   </div>
 
@@ -437,15 +641,11 @@
               <th>Simulaciones</th>
               <th>Promedio</th>
               <th>Mejor Hit</th>
-              <th>0 Hits</th>
               <th>5+</th>
-              <th>6+</th>
               <th>7+</th>
-              <th>8+</th>
               <th>9+</th>
-              <th>10 Hits</th>
               <th>% 7+</th>
-              <th>% 10</th>
+              <th>Veces Mejor</th>
             </tr>
           </thead>
           <tbody id="tablebody"></tbody>
@@ -491,9 +691,15 @@ const TICKETS = [
   [7,23,32,34,44,54,59,63,66,79],
   [5,13,14,17,40,42,48,51,55,70],
   [21,28,35,52,56,61,65,67,71,78],
-  [7,23,32,34,44,54,59,63,64,66]
+  [7,23,32,34,44,54,59,63,64,66],
+  [2,9,18,24,31,43,50,57,64,74],
+  [1,11,19,25,33,41,49,58,68,77],
+  [3,12,20,29,36,45,53,60,69,80],
+  [4,16,22,30,37,47,52,61,72,76],
+  [6,15,21,28,39,46,55,62,71,73],
+  [8,14,17,26,35,42,51,56,65,70]
 ];
-const TICKET_NAMES = ['Pro Max #1','Pro Max #2','Pro Max #3','Ticket Alfa'];
+const TICKET_NAMES = ['Pro Max #1','Pro Max #2','Pro Max #3','Ticket Alfa','Premium #4','Premium #5','Premium #6','Premium #7','Premium #8','Premium #9'];
 
 // ==================== INIT ====================
 window.onload = () => {
@@ -543,9 +749,11 @@ function iniciarSimulacion() {
   document.getElementById('progressWrap').style.display = 'block';
   document.getElementById('results').style.display = 'none';
 
+  // stats por ticket: sumHits acumula aciertos, best = máximo aciertos,
+  // c5/c7/c8/c9 = cuántas veces ≥5/7/8/9 aciertos, timesBest = veces que fue el mejor del sorteo
   const stats = TICKETS.map(() => ({
     total: 0, sumHits: 0, best: 0,
-    zero: 0, c5: 0, c6: 0, c7: 0, c8: 0, c9: 0, c10: 0
+    c5: 0, c7: 0, c8: 0, c9: 0, timesBest: 0
   }));
   sampleSorteos = [];
 
@@ -558,18 +766,20 @@ function iniciarSimulacion() {
     for (let i = done; i < end; i++) {
       const sorteo = generarSorteo();
       if (sampleSorteos.length < 20) sampleSorteos.push(sorteo);
-      TICKETS.forEach((ticket, ti) => {
-        const h = contarAciertos(sorteo, ticket);
+
+      // Calcular aciertos de todos los tickets en este sorteo
+      const hitsEste = TICKETS.map(ticket => contarAciertos(sorteo, ticket));
+      const maxEste  = Math.max(...hitsEste);
+
+      hitsEste.forEach((h, ti) => {
         stats[ti].total++;
         stats[ti].sumHits += h;
         if (h > stats[ti].best) stats[ti].best = h;
-        if (h === 0) stats[ti].zero++;
         if (h >= 5)  stats[ti].c5++;
-        if (h >= 6)  stats[ti].c6++;
         if (h >= 7)  stats[ti].c7++;
         if (h >= 8)  stats[ti].c8++;
         if (h >= 9)  stats[ti].c9++;
-        if (h === 10) stats[ti].c10++;
+        if (h === maxEste) stats[ti].timesBest++;  // puede haber empate: todos los que empaten ganan
       });
     }
     done = end;
@@ -607,22 +817,17 @@ function renderTabla(stats) {
   stats.forEach((s, i) => {
     const avg = (s.sumHits / s.total).toFixed(3);
     const pct7 = (s.c7/s.total*100).toFixed(3)+'%';
-    const pct10 = (s.c10/s.total*100).toFixed(4)+'%';
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>${TICKET_NAMES[i]}</td>
       <td>${s.total.toLocaleString()}</td>
       <td><span class="badge-blue">${avg}</span></td>
       <td><span class="badge-${s.best>=8?'green':s.best>=6?'amber':'blue'}">${s.best}</span></td>
-      <td>${s.zero.toLocaleString()}</td>
       <td>${s.c5.toLocaleString()}</td>
-      <td>${s.c6.toLocaleString()}</td>
       <td>${s.c7.toLocaleString()}</td>
-      <td>${s.c8.toLocaleString()}</td>
       <td>${s.c9.toLocaleString()}</td>
-      <td><strong>${s.c10.toLocaleString()}</strong></td>
       <td>${pct7}</td>
-      <td>${pct10}</td>
+      <td><span class="badge-purple">${s.timesBest.toLocaleString()}</span></td>
     `;
     body.appendChild(tr);
   });
@@ -630,30 +835,45 @@ function renderTabla(stats) {
 
 // ==================== GANADORES ====================
 function renderWinners(stats) {
-  const avgs = stats.map(s => s.sumHits/s.total);
-  const best7 = stats.map(s => s.c7);
-  const best10 = stats.map(s => s.c10);
+  const avgs      = stats.map(s => s.sumHits/s.total);
+  const best5     = stats.map(s => s.c5);
+  const timesBest = stats.map(s => s.timesBest);
 
-  const maxAvgIdx  = avgs.indexOf(Math.max(...avgs));
-  const max7Idx    = best7.indexOf(Math.max(...best7));
-  const max10Idx   = best10.indexOf(Math.max(...best10));
+  // Ranking de los 3 tickets más fuertes por promedio de aciertos
+  const rankIdx = avgs
+    .map((v, i) => ({ v, i }))
+    .sort((a, b) => b.v - a.v)
+    .map(x => x.i);
+
+  const max5Idx   = best5.indexOf(Math.max(...best5));
+  const maxBestIdx = timesBest.indexOf(Math.max(...timesBest));
 
   const grid = document.getElementById('winnersGrid');
   grid.innerHTML = `
     <div class="winner-card gold">
-      <div class="winner-type">🥇 Mayor Promedio</div>
-      <div class="winner-name">${TICKET_NAMES[maxAvgIdx]}</div>
-      <div class="winner-detail">Promedio: ${avgs[maxAvgIdx].toFixed(3)} aciertos</div>
+      <div class="winner-type">🥇 Ticket más fuerte</div>
+      <div class="winner-name">${TICKET_NAMES[rankIdx[0]]}</div>
+      <div class="winner-detail">Promedio: ${avgs[rankIdx[0]].toFixed(3)} aciertos</div>
     </div>
     <div class="winner-card silver">
-      <div class="winner-type">🥈 Más 7+ Aciertos</div>
-      <div class="winner-name">${TICKET_NAMES[max7Idx]}</div>
-      <div class="winner-detail">${best7[max7Idx].toLocaleString()} veces con 7+</div>
+      <div class="winner-type">🥈 Segundo ticket más fuerte</div>
+      <div class="winner-name">${TICKET_NAMES[rankIdx[1]]}</div>
+      <div class="winner-detail">Promedio: ${avgs[rankIdx[1]].toFixed(3)} aciertos</div>
     </div>
     <div class="winner-card bronze">
-      <div class="winner-type">🏆 Más 10 Aciertos</div>
-      <div class="winner-name">${TICKET_NAMES[max10Idx]}</div>
-      <div class="winner-detail">${best10[max10Idx].toLocaleString()} veces con 10 plenos</div>
+      <div class="winner-type">🥉 Tercer ticket más fuerte</div>
+      <div class="winner-name">${TICKET_NAMES[rankIdx[2]]}</div>
+      <div class="winner-detail">Promedio: ${avgs[rankIdx[2]].toFixed(3)} aciertos</div>
+    </div>
+    <div class="winner-card gold" style="border-color:#059669;background:var(--green-light);">
+      <div class="winner-type">⭐ Más 5+ Aciertos</div>
+      <div class="winner-name">${TICKET_NAMES[max5Idx]}</div>
+      <div class="winner-detail">${best5[max5Idx].toLocaleString()} veces con 5+</div>
+    </div>
+    <div class="winner-card silver" style="border-color:var(--purple);background:var(--purple-light);">
+      <div class="winner-type">🏆 Más veces el mejor del sorteo</div>
+      <div class="winner-name">${TICKET_NAMES[maxBestIdx]}</div>
+      <div class="winner-detail">${timesBest[maxBestIdx].toLocaleString()} veces ganador del sorteo</div>
     </div>
   `;
 }
@@ -662,9 +882,9 @@ function renderWinners(stats) {
 function renderLectura(stats, total) {
   const lines = [];
   const avgs = stats.map(s => s.sumHits/s.total);
-  const globalAvg = avgs.reduce((a,b)=>a+b,0)/3;
+  const globalAvg = avgs.reduce((a,b)=>a+b,0)/10;
 
-  lines.push(`<p>📋 <strong>Resumen general:</strong> Se simularon <strong>${total.toLocaleString()} sorteos</strong> de 20 números del 1 al 80 y se compararon contra los 3 tickets. El promedio global de aciertos fue <strong>${globalAvg.toFixed(3)}</strong> por ticket (valor teórico esperado: 2.500).</p>`);
+  lines.push(`<p>📋 <strong>Resumen general:</strong> Se simularon <strong>${total.toLocaleString()} sorteos</strong> de 20 números del 1 al 80 y se compararon contra los 10 tickets. El promedio global de aciertos fue <strong>${globalAvg.toFixed(3)}</strong> por ticket (valor teórico esperado: 2.500).</p>`);
 
   stats.forEach((s, i) => {
     const avg = s.sumHits / s.total;
@@ -673,17 +893,20 @@ function renderLectura(stats, total) {
     else lines.push(`<p>✅ <strong>${TICKET_NAMES[i]}</strong> se comportó dentro del rango estadístico esperado (promedio ${avg.toFixed(3)}), consistente con distribución uniforme al azar.</p>`);
   });
 
-  const max7 = Math.max(...stats.map(s=>s.c7));
-  const max10 = Math.max(...stats.map(s=>s.c10));
-  const pct7max = max7/total*100;
+  const max5 = Math.max(...stats.map(s=>s.c5));
+  const max9 = Math.max(...stats.map(s=>s.c9));
+  const pct5max = max5/total*100;
 
-  if (pct7max > 3) lines.push(`<p>⚡ Hubo <strong>${max7.toLocaleString()} ocasiones</strong> con 7 o más aciertos (${pct7max.toFixed(2)}%). Eso es estadísticamente notable. En el Kino real, 7+ suele requerir premios parciales.</p>`);
-  else if (pct7max > 1) lines.push(`<p>📊 Los 7+ aciertos ocurrieron en <strong>${pct7max.toFixed(3)}%</strong> de los sorteos. Es un porcentaje bajo pero consistente con la probabilidad combinatoria real.</p>`);
-  else lines.push(`<p>🎯 Los 7+ aciertos fueron escasos (<strong>${pct7max.toFixed(3)}%</strong> del total). Esto refleja la baja probabilidad combinatoria de acertar muchos números en una selección de 20 sobre 80.</p>`);
+  if (pct5max > 30) lines.push(`<p>⚡ Hubo <strong>${max5.toLocaleString()} ocasiones</strong> con 5 o más aciertos (${pct5max.toFixed(2)}%). Un resultado notable para esta cantidad de sorteos.</p>`);
+  else if (pct5max > 10) lines.push(`<p>📊 Los 5+ aciertos ocurrieron en <strong>${pct5max.toFixed(2)}%</strong> de los sorteos. Es un porcentaje consistente con la probabilidad combinatoria real.</p>`);
+  else lines.push(`<p>🎯 Los 5+ aciertos fueron relativamente escasos (<strong>${pct5max.toFixed(2)}%</strong> del total). Esto refleja la probabilidad combinatoria de acertar muchos números en una selección de 20 sobre 80.</p>`);
 
-  if (max10 === 0) lines.push(`<p>🔮 <strong>Ningún ticket alcanzó los 10 aciertos</strong> en esta simulación. Esto es completamente normal: la probabilidad de acertar 10 de 10 en un sorteo de 20/80 es aproximadamente 1 en 8.9 millones.</p>`);
-  else if (max10 === 1) lines.push(`<p>🌟 <strong>Se registró exactamente 1 pleno de 10 aciertos</strong>. Un evento extremadamente raro que confirma la altísima aleatoriedad del sistema.</p>`);
-  else lines.push(`<p>💫 <strong>Se lograron ${max10} plenos de 10 aciertos</strong>. Con una muestra de ${total.toLocaleString()} sorteos, esto solo es posible cuando el volumen de simulaciones es muy alto.</p>`);
+  if (max9 === 0) lines.push(`<p>🔮 <strong>Ningún ticket alcanzó los 9 aciertos</strong> en esta simulación. Completamente normal con muestras pequeñas — la probabilidad de acertar 9 de 10 es muy baja.</p>`);
+  else lines.push(`<p>🌟 Se registraron <strong>${max9} ocasiones con 9+ aciertos</strong>. Un resultado excepcional dentro del azar simulado.</p>`);
+
+  // Ranking final
+  const rankIdx = avgs.map((v,i)=>({v,i})).sort((a,b)=>b.v-a.v).map(x=>x.i);
+  lines.push(`<p>🏅 <strong>Ranking final:</strong> 🥇 ${TICKET_NAMES[rankIdx[0]]} · 🥈 ${TICKET_NAMES[rankIdx[1]]} · 🥉 ${TICKET_NAMES[rankIdx[2]]}. Clasificación basada en promedio de aciertos acumulados.</p>`);
 
   lines.push(`<p>ℹ️ <em>Los resultados varían en cada ejecución. Para obtener estimaciones más estables, usa 100,000 sorteos o más.</em></p>`);
 
@@ -731,6 +954,153 @@ function toggleSorteos() {
     el.style.display = 'none';
     btn.textContent = '👁 Mostrar sorteos';
   }
+}
+// ==================== MODO KINO EN VIVO ====================
+let liveInterval = null;
+let liveNumbers = [];
+let liveIndex = 0;
+let liveHits = [];
+
+function iniciarLive() {
+  if (liveInterval) return;
+
+  // Generar sorteo completo (20 números)
+  liveNumbers = generarSorteo();
+  liveIndex = 0;
+  liveHits = TICKETS.map(() => []);
+
+  // Reset UI
+  document.getElementById('btnLive').disabled = true;
+  document.getElementById('btnStop').style.display = 'inline-block';
+  document.getElementById('liveDot').classList.add('active');
+  document.getElementById('liveResultBanner').className = 'live-result-banner';
+  document.getElementById('currentBall').className = 'current-ball';
+  document.getElementById('currentBall').textContent = '?';
+  document.getElementById('currentBallSub').textContent = '';
+
+  // Construir cuadrícula de bolas vacías
+  const grid = document.getElementById('liveBallsGrid');
+  grid.innerHTML = '';
+  for (let i = 0; i < 20; i++) {
+    const b = document.createElement('div');
+    b.className = 'live-ball';
+    b.id = 'lb_' + i;
+    b.textContent = '·';
+    grid.appendChild(b);
+  }
+
+  // Construir scoreboard
+  const sc = document.getElementById('liveScores');
+  sc.innerHTML = '';
+  TICKETS.forEach((t, i) => {
+    const card = document.createElement('div');
+    card.className = 'live-score-card';
+    card.id = 'lsc_' + i;
+    card.innerHTML = `
+      <div class="live-score-name">${TICKET_NAMES[i]}</div>
+      <div class="live-score-num" id="lsn_${i}">0</div>
+      <div class="live-score-sub">aciertos</div>
+    `;
+    sc.appendChild(card);
+  });
+
+  document.getElementById('liveCounter').innerHTML =
+    `Extrayendo bola <span>1</span> de <span>20</span>…`;
+
+  // Extraer primera bola de inmediato, luego cada 3s
+  extraerBola();
+  liveInterval = setInterval(() => {
+    if (liveIndex >= 20) {
+      finalizarLive();
+    } else {
+      extraerBola();
+    }
+  }, 3000);
+}
+
+function extraerBola() {
+  if (liveIndex >= 20) return;
+  const num = liveNumbers[liveIndex];
+
+  // Detectar si es acierto en algún ticket
+  const esHit = TICKETS.some(t => t.includes(num));
+
+  // Animar bola central
+  const cb = document.getElementById('currentBall');
+  cb.className = 'current-ball' + (esHit ? ' hit-ball' : '');
+  cb.textContent = num < 10 ? '0' + num : num;
+  // Forzar re-trigger de animación
+  cb.style.animation = 'none';
+  cb.offsetHeight; // reflow
+  cb.style.animation = '';
+  cb.classList.add('dropping');
+
+  // Sub-label
+  const sub = document.getElementById('currentBallSub');
+  sub.textContent = esHit ? '✅ ¡Acierto!' : '';
+
+  // Revelar bola en cuadrícula
+  const lb = document.getElementById('lb_' + liveIndex);
+  lb.className = 'live-ball revealed' + (esHit ? ' is-hit' : '');
+  lb.textContent = num < 10 ? '0' + num : num;
+
+  // Actualizar aciertos por ticket
+  TICKETS.forEach((ticket, ti) => {
+    if (ticket.includes(num)) {
+      liveHits[ti].push(num);
+      const count = liveHits[ti].length;
+      document.getElementById('lsn_' + ti).textContent = count;
+      document.getElementById('lsc_' + ti).classList.add('has-hit');
+    }
+  });
+
+  liveIndex++;
+  const restantes = 20 - liveIndex;
+  if (restantes > 0) {
+    document.getElementById('liveCounter').innerHTML =
+      `Bola <span>${liveIndex}</span> de <span>20</span> — Quedan <span>${restantes}</span>`;
+  } else {
+    document.getElementById('liveCounter').innerHTML =
+      `✅ <span>20 / 20</span> bolas extraídas — Sorteo completo`;
+  }
+}
+
+function finalizarLive() {
+  clearInterval(liveInterval);
+  liveInterval = null;
+  document.getElementById('btnLive').disabled = false;
+  document.getElementById('btnStop').style.display = 'none';
+  document.getElementById('liveDot').classList.remove('active');
+
+  // Calcular mejor resultado
+  const maxHits = Math.max(...liveHits.map(h => h.length));
+  const bestIdx = liveHits.map(h => h.length).indexOf(maxHits);
+  const banner  = document.getElementById('liveResultBanner');
+  const title   = document.getElementById('liveResultTitle');
+  const sub_    = document.getElementById('liveResultSub');
+
+  if (maxHits >= 7) {
+    banner.className = 'live-result-banner show good';
+    title.textContent = `🏆 ¡${maxHits} aciertos en ${TICKET_NAMES[bestIdx]}!`;
+    sub_.textContent = `Excelente resultado. ${maxHits} de 10 números coincidieron con el sorteo.`;
+  } else if (maxHits >= 4) {
+    banner.className = 'live-result-banner show meh';
+    title.textContent = `👍 ${maxHits} aciertos en ${TICKET_NAMES[bestIdx]}`;
+    sub_.textContent = `Resultado intermedio. Ningún ticket superó los 7 aciertos esta vez.`;
+  } else {
+    banner.className = 'live-result-banner show none';
+    title.textContent = `📊 Máximo: ${maxHits} aciertos`;
+    sub_.textContent = `Sorteo sin coincidencias altas. Así es el azar — intenta otro sorteo.`;
+  }
+}
+
+function detenerLive() {
+  clearInterval(liveInterval);
+  liveInterval = null;
+  document.getElementById('btnLive').disabled = false;
+  document.getElementById('btnStop').style.display = 'none';
+  document.getElementById('liveDot').classList.remove('active');
+  document.getElementById('liveCounter').textContent = 'Sorteo detenido. Pulsa "Iniciar sorteo" para un nuevo sorteo.';
 }
 </script>
 </body>
