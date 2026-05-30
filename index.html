@@ -496,6 +496,55 @@
   .live-result-banner strong { font-size: 16px; display: block; margin-bottom: 4px; }
   .live-result-banner span   { font-size: 12px; }
 
+
+  /* DARK MODE */
+  body.dark {
+    --bg: #0f172a;
+    --surface: #1e293b;
+    --surface2: #162032;
+    --border: #2d3f55;
+    --text: #f1f5f9;
+    --text2: #94a3b8;
+    --text3: #475569;
+    --blue-light: #1e3a5f;
+    --green-light: #0d2b1f;
+    --amber-light: #2b1d06;
+    --red-light: #2b0f0f;
+    --purple-light: #1e1040;
+    --shadow: 0 2px 20px rgba(0,0,0,0.3);
+    --shadow-lg: 0 8px 40px rgba(0,0,0,0.5);
+  }
+  body.dark .hero {
+    background: linear-gradient(135deg, #060d24 0%, #0f2057 60%, #1a3a8a 100%);
+  }
+  body.dark select {
+    background-color: var(--surface2);
+    color: var(--text);
+  }
+  body.dark .lectura-body {
+    background: linear-gradient(135deg, #060d24 0%, #0d2057 100%);
+  }
+  body.dark .machine-wrap {
+    background: linear-gradient(160deg, #060d24 0%, #0f1f5a 100%);
+  }
+  /* Dark mode toggle button */
+  .dark-toggle {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 999;
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    box-shadow: var(--shadow-lg);
+    cursor: pointer;
+    font-size: 20px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all .2s;
+  }
+  .dark-toggle:hover { transform: scale(1.1); }
+
   /* RESPONSIVE */
   @media (max-width: 600px) {
     .card { padding: 18px; }
@@ -729,6 +778,14 @@
           <div class="ticket-label">Premium por Frecuencia</div>
           <div class="ticket-numbers" id="freqTicketNums"></div>
         </div>
+      </div>
+
+      <!-- Botón copiar ticket -->
+      <div style="margin-bottom:16px;">
+        <button onclick="copiarTicket()" id="btnCopiar" style="background:var(--green);color:#fff;border:none;border-radius:10px;padding:10px 22px;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:8px;">
+          📋 Copiar ticket
+        </button>
+        <span id="copiadoMsg" style="display:none;font-size:12px;color:var(--green);margin-left:10px;font-weight:700;">✅ ¡Copiado!</span>
       </div>
 
       <!-- Stats rápidos -->
@@ -1313,5 +1370,6 @@ function finalizarFrecuencia(freq, total) {
   document.getElementById('freqCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 </script>
+<button class="dark-toggle" onclick="toggleDark()" id="darkBtn" title="Modo oscuro">🌙</button>
 </body>
 </html>
