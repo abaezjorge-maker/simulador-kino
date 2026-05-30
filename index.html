@@ -510,6 +510,18 @@
 
 <!-- HERO -->
 <div class="hero">
+  <div style="position:absolute;top:16px;right:16px;z-index:10;">
+    <div id="adminBox">
+      <button onclick="toggleAdminBox()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.5);font-size:11px;font-weight:700;letter-spacing:1px;padding:5px 12px;border-radius:99px;cursor:pointer;font-family:'Syne',sans-serif;">🔐 Admin</button>
+      <div id="adminPanel" style="display:none;margin-top:8px;background:rgba(255,255,255,0.12);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.2);border-radius:12px;padding:12px;text-align:left;min-width:200px;">
+        <div style="font-size:11px;color:rgba(255,255,255,0.6);margin-bottom:8px;font-weight:700;letter-spacing:1px;">CONTRASEÑA</div>
+        <input type="password" id="adminPass" placeholder="••••" onkeydown="if(event.key==='Enter')verificarAdmin()" style="width:100%;padding:8px 12px;border-radius:8px;border:1.5px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.1);color:#fff;font-family:'DM Mono',monospace;font-size:14px;outline:none;margin-bottom:8px;">
+        <button onclick="verificarAdmin()" style="width:100%;padding:8px;background:var(--blue);border:none;border-radius:8px;color:#fff;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;">Entrar</button>
+        <div id="adminError" style="display:none;font-size:11px;color:#fca5a5;margin-top:6px;text-align:center;">Contraseña incorrecta</div>
+      </div>
+    </div>
+    <div id="adminBadge" style="display:none;background:rgba(14,159,110,0.3);border:1px solid rgba(14,159,110,0.5);color:#6ee7b7;font-size:11px;font-weight:700;letter-spacing:1px;padding:5px 12px;border-radius:99px;">✅ Modo Admin &nbsp;<span onclick="cerrarAdmin()" style="cursor:pointer;opacity:0.7;">✕</span></div>
+  </div>
   <div class="hero-badge">Simulador Estadístico</div>
   <h1>Kino <span>Premium</span></h1>
   <p>Compara tus tickets contra miles de sorteos aleatorios y mide su comportamiento estadístico.</p>
@@ -685,6 +697,75 @@
   </div>
 </div>
 
+<!-- GENERADOR POR FRECUENCIA -->
+<div class="container">
+  <div class="card" id="freqCard">
+    <div class="card-title">🧬 Generador de Ticket Premium por Frecuencia</div>
+    <p style="font-size:14px;color:var(--text2);margin-bottom:20px;line-height:1.6;">
+      Genera 100,000 sorteos aleatorios, cuenta cuántas veces aparece cada número y construye un ticket con los <strong>10 más frecuentes</strong>.
+    </p>
+    <div class="controls-row" style="margin-bottom:0;">
+      <button class="btn-primary" id="btnFreq" onclick="iniciarFrecuencia()">🧬 Generar ticket premium</button>
+    </div>
+
+    <!-- Progress -->
+    <div class="progress-wrap" id="freqProgressWrap" style="display:none;">
+      <div class="progress-bar-bg"><div class="progress-bar-fill" id="freqProgressFill"></div></div>
+      <div class="progress-label" id="freqProgressLabel">Procesando...</div>
+    </div>
+
+    <!-- Resultados -->
+    <div id="freqResults" style="display:none;margin-top:24px;">
+
+      <!-- Ticket generado -->
+      <div style="margin-bottom:20px;">
+        <div class="card-title" style="margin-bottom:12px;">🎟️ Ticket Generado</div>
+        <div class="ticket" style="display:inline-block;min-width:280px;">
+          <div class="ticket-label">Premium por Frecuencia</div>
+          <div class="ticket-numbers" id="freqTicketNums"></div>
+        </div>
+      </div>
+
+      <!-- Stats rápidos -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:20px;">
+        <div style="background:var(--green-light);border:1.5px solid var(--green);border-radius:12px;padding:16px;">
+          <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--green);margin-bottom:4px;">🔝 Número más repetido</div>
+          <div style="font-size:28px;font-weight:800;color:var(--green);font-family:'DM Mono',monospace;" id="freqMax">—</div>
+          <div style="font-size:12px;color:var(--green);margin-top:2px;font-family:'DM Mono',monospace;" id="freqMaxCount">— veces</div>
+        </div>
+        <div style="background:var(--red-light);border:1.5px solid var(--red);border-radius:12px;padding:16px;">
+          <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--red);margin-bottom:4px;">🔻 Número menos repetido</div>
+          <div style="font-size:28px;font-weight:800;color:var(--red);font-family:'DM Mono',monospace;" id="freqMin">—</div>
+          <div style="font-size:12px;color:var(--red);margin-top:2px;font-family:'DM Mono',monospace;" id="freqMinCount">— veces</div>
+        </div>
+        <div style="background:var(--amber-light);border:1.5px solid var(--amber);border-radius:12px;padding:16px;">
+          <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--amber);margin-bottom:4px;">📐 Diferencia</div>
+          <div style="font-size:28px;font-weight:800;color:var(--amber);font-family:'DM Mono',monospace;" id="freqDiff">—</div>
+          <div style="font-size:12px;color:var(--amber);margin-top:2px;font-family:'DM Mono',monospace;">apariciones de diferencia</div>
+        </div>
+      </div>
+
+      <!-- Top 10 tabla -->
+      <div class="card-title" style="margin-bottom:12px;">📊 Top 10 números más frecuentes</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Posición</th>
+              <th>Número</th>
+              <th>Apariciones</th>
+              <th>Frecuencia %</th>
+              <th>Barra</th>
+            </tr>
+          </thead>
+          <tbody id="freqTableBody"></tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 <script>
 // ==================== DATOS ====================
 const TICKETS = [
@@ -702,6 +783,8 @@ const TICKETS = [
 const TICKET_NAMES = ['Pro Max #1','Pro Max #2','Pro Max #3','Ticket Alfa','Premium #4','Premium #5','Premium #6','Premium #7','Premium #8','Premium #9'];
 
 // ==================== INIT ====================
+let adminMode = false;
+
 window.onload = () => {
   const heroNums = [4,12,23,37,45,56,63,71,80];
   const hb = document.getElementById('heroBalls');
@@ -714,13 +797,45 @@ window.onload = () => {
   TICKETS.forEach((t, i) => renderTicket(t, 't'+(i+1)+'display', []));
 };
 
+// ==================== ADMIN ====================
+function toggleAdminBox() {
+  const panel = document.getElementById('adminPanel');
+  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+  if (panel.style.display === 'block') {
+    setTimeout(() => document.getElementById('adminPass').focus(), 50);
+  }
+}
+
+function verificarAdmin() {
+  const pass = document.getElementById('adminPass').value;
+  if (pass === '3321') {
+    adminMode = true;
+    document.getElementById('adminBox').style.display = 'none';
+    document.getElementById('adminBadge').style.display = 'inline-block';
+    TICKETS.forEach((t, i) => renderTicket(t, 't'+(i+1)+'display', []));
+    document.getElementById('adminError').style.display = 'none';
+  } else {
+    document.getElementById('adminError').style.display = 'block';
+    document.getElementById('adminPass').value = '';
+  }
+}
+
+function cerrarAdmin() {
+  adminMode = false;
+  document.getElementById('adminBadge').style.display = 'none';
+  document.getElementById('adminBox').style.display = 'inline-block';
+  document.getElementById('adminPass').value = '';
+  document.getElementById('adminPanel').style.display = 'none';
+  TICKETS.forEach((t, i) => renderTicket(t, 't'+(i+1)+'display', []));
+}
+
 function renderTicket(nums, id, hits) {
   const el = document.getElementById(id);
   el.innerHTML = '';
   nums.forEach(n => {
     const b = document.createElement('div');
     b.className = 'num-ball' + (hits.includes(n) ? ' hit' : '');
-    b.textContent = n < 10 ? '0'+n : n;
+    b.textContent = adminMode ? (n < 10 ? '0'+n : n) : '••';
     el.appendChild(b);
   });
 }
@@ -1101,6 +1216,96 @@ function detenerLive() {
   document.getElementById('btnStop').style.display = 'none';
   document.getElementById('liveDot').classList.remove('active');
   document.getElementById('liveCounter').textContent = 'Sorteo detenido. Pulsa "Iniciar sorteo" para un nuevo sorteo.';
+// ==================== GENERADOR POR FRECUENCIA ====================
+function iniciarFrecuencia() {
+  const TOTAL = 100000;
+  document.getElementById('btnFreq').disabled = true;
+  document.getElementById('freqResults').style.display = 'none';
+  document.getElementById('freqProgressWrap').style.display = 'block';
+
+  // Contador de apariciones para cada número del 1 al 80
+  const freq = new Array(81).fill(0); // índice 1..80
+  const CHUNK = 5000;
+  let done = 0;
+
+  function processChunk() {
+    const end = Math.min(done + CHUNK, TOTAL);
+    for (let i = done; i < end; i++) {
+      const sorteo = generarSorteo();
+      sorteo.forEach(n => freq[n]++);
+    }
+    done = end;
+    const pct = (done / TOTAL * 100).toFixed(1);
+    document.getElementById('freqProgressFill').style.width = pct + '%';
+    document.getElementById('freqProgressLabel').textContent =
+      `Procesando: ${done.toLocaleString()} / ${TOTAL.toLocaleString()} sorteos (${pct}%)`;
+
+    if (done < TOTAL) {
+      setTimeout(processChunk, 0);
+    } else {
+      finalizarFrecuencia(freq, TOTAL);
+    }
+  }
+  processChunk();
+}
+
+function finalizarFrecuencia(freq, total) {
+  // Construir array [{num, count}] para números 1..80
+  const ranked = [];
+  for (let n = 1; n <= 80; n++) ranked.push({ num: n, count: freq[n] });
+  ranked.sort((a, b) => b.count - a.count);
+
+  const top10 = ranked.slice(0, 10);
+  const maxEntry = ranked[0];
+  const minEntry = ranked[ranked.length - 1];
+  const diff = maxEntry.count - minEntry.count;
+  const totalApparitions = total * 20; // cada sorteo aporta 20 números
+
+  // Ticket
+  const ticketEl = document.getElementById('freqTicketNums');
+  ticketEl.innerHTML = '';
+  const top10nums = top10.map(x => x.num).sort((a, b) => a - b);
+  top10nums.forEach(n => {
+    const b = document.createElement('div');
+    b.className = 'num-ball hit';
+    b.textContent = n < 10 ? '0' + n : n;
+    ticketEl.appendChild(b);
+  });
+
+  // Stats
+  document.getElementById('freqMax').textContent = maxEntry.num < 10 ? '0' + maxEntry.num : maxEntry.num;
+  document.getElementById('freqMaxCount').textContent = maxEntry.count.toLocaleString() + ' veces';
+  document.getElementById('freqMin').textContent = minEntry.num < 10 ? '0' + minEntry.num : minEntry.num;
+  document.getElementById('freqMinCount').textContent = minEntry.count.toLocaleString() + ' veces';
+  document.getElementById('freqDiff').textContent = diff.toLocaleString();
+
+  // Tabla top 10
+  const tbody = document.getElementById('freqTableBody');
+  tbody.innerHTML = '';
+  const medals = ['🥇','🥈','🥉'];
+  top10.forEach((entry, i) => {
+    const pct = (entry.count / totalApparitions * 100).toFixed(4);
+    const barW = Math.round(entry.count / maxEntry.count * 100);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="text-align:center;">${medals[i] || '#' + (i+1)}</td>
+      <td><span class="badge-green" style="font-size:14px;font-family:'DM Mono',monospace;">${entry.num < 10 ? '0'+entry.num : entry.num}</span></td>
+      <td><span class="badge-blue">${entry.count.toLocaleString()}</span></td>
+      <td>${pct}%</td>
+      <td style="min-width:120px;">
+        <div style="background:var(--border);border-radius:99px;height:8px;overflow:hidden;">
+          <div style="width:${barW}%;height:100%;background:linear-gradient(90deg,var(--green),#34d399);border-radius:99px;"></div>
+        </div>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  // Mostrar
+  document.getElementById('freqProgressWrap').style.display = 'none';
+  document.getElementById('freqResults').style.display = 'block';
+  document.getElementById('btnFreq').disabled = false;
+  document.getElementById('freqCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 </script>
 </body>
