@@ -1369,6 +1369,32 @@ function finalizarFrecuencia(freq, total) {
   document.getElementById('btnFreq').disabled = false;
   document.getElementById('freqCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
+
+// ==================== COPIAR TICKET ====================
+function copiarTicket() {
+  const balls = document.querySelectorAll('#freqTicketNums .num-ball');
+  if (!balls.length) return;
+  const nums = Array.from(balls).map(b => b.textContent.trim()).join(' - ');
+  navigator.clipboard.writeText(nums).then(function() {
+    var msg = document.getElementById('copiadoMsg');
+    msg.style.display = 'inline';
+    setTimeout(function() { msg.style.display = 'none'; }, 2500);
+  });
+}
+
+// ==================== MODO OSCURO ====================
+function toggleDark() {
+  var isDark = document.body.classList.toggle('dark');
+  document.getElementById('darkBtn').textContent = isDark ? '☀️' : '🌙';
+  localStorage.setItem('kinoDark', isDark ? '1' : '0');
+}
+(function() {
+  if (localStorage.getItem('kinoDark') === '1') {
+    document.body.classList.add('dark');
+    var btn = document.getElementById('darkBtn');
+    if (btn) btn.textContent = '☀️';
+  }
+})();
 </script>
 <button class="dark-toggle" onclick="toggleDark()" id="darkBtn" title="Modo oscuro">🌙</button>
 </body>
